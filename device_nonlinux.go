@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"unsafe"
 )
 
 // A Linux input device from which events can be read.
@@ -216,33 +215,33 @@ func (dev *InputDevice) set_device_info() error {
 //       to repeat (in milliseconds)
 func (dev *InputDevice) GetRepeatRate() *[2]uint {
 	repeat_delay := new([2]uint)
-	ioctl(dev.File.Fd(), uintptr(EVIOCGREP), unsafe.Pointer(repeat_delay))
+	// ioctl(dev.File.Fd(), uintptr(EVIOCGREP), unsafe.Pointer(repeat_delay))
 
 	return repeat_delay
 }
 
 // Set repeat rate and delay.
 func (dev *InputDevice) SetRepeatRate(repeat, delay uint) {
-	repeat_delay := new([2]uint)
-	repeat_delay[0], repeat_delay[1] = repeat, delay
-	ioctl(dev.File.Fd(), uintptr(EVIOCSREP), unsafe.Pointer(repeat_delay))
+	// repeat_delay := new([2]uint)
+	// repeat_delay[0], repeat_delay[1] = repeat, delay
+	// ioctl(dev.File.Fd(), uintptr(EVIOCSREP), unsafe.Pointer(repeat_delay))
 }
 
 // Grab the input device exclusively.
 func (dev *InputDevice) Grab() error {
-	grab := int(1)
-	if err := ioctl(dev.File.Fd(), uintptr(EVIOCGRAB), unsafe.Pointer(&grab)); err != 0 {
-		return err
-	}
+	// grab := int(1)
+	// if err := ioctl(dev.File.Fd(), uintptr(EVIOCGRAB), unsafe.Pointer(&grab)); err != 0 {
+	// 	return err
+	// }
 
 	return nil
 }
 
 // Release a grabbed input device.
 func (dev *InputDevice) Release() error {
-	if err := ioctl(dev.File.Fd(), uintptr(EVIOCGRAB), unsafe.Pointer(nil)); err != 0 {
-		return err
-	}
+	// if err := ioctl(dev.File.Fd(), uintptr(EVIOCGRAB), unsafe.Pointer(nil)); err != 0 {
+	// 	return err
+	// }
 
 	return nil
 }
