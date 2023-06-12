@@ -1,3 +1,5 @@
+//go:build linux
+
 package evdev
 
 /*
@@ -17,8 +19,10 @@ package evdev
  static int _EVIOCSABS(int abs)    {return EVIOCSABS(abs);}
 */
 import "C"
-import "syscall"
-import "unsafe"
+import (
+	"syscall"
+	"unsafe"
+)
 
 type _InputEvent C.struct_input_event
 type _InputAbsinfo C.struct_input_absinfo
