@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"unsafe"
 )
 
@@ -130,83 +129,83 @@ func (dev *InputDevice) set_device_capabilities() error {
 	// Capabilities is a map of supported event types to lists of
 	// events e.g: {1: [272, 273, 274, 275], 2: [0, 1, 6, 8]}
 	// capabilities := make(map[int][]int)
-	capabilities := make(map[CapabilityType][]CapabilityCode)
+	// capabilities := make(map[CapabilityType][]CapabilityCode)
 
-	evbits := new([(EV_MAX + 1) / 8]byte)
-	codebits := new([(KEY_MAX + 1) / 8]byte)
+	// evbits := new([(EV_MAX + 1) / 8]byte)
+	// codebits := new([(KEY_MAX + 1) / 8]byte)
 	// absbits  := new([6]byte)
 
-	err := ioctl(dev.File.Fd(), uintptr(EVIOCGBIT(0, EV_MAX)), unsafe.Pointer(evbits))
-	if err != 0 {
-		return err
-	}
+	// err := ioctl(dev.File.Fd(), uintptr(EVIOCGBIT(0, EV_MAX)), unsafe.Pointer(evbits))
+	// if err != 0 {
+	// 	return err
+	// }
 
 	// Build a map of the device's capabilities
-	for evtype := 0; evtype < EV_MAX; evtype++ {
-		if evbits[evtype/8]&(1<<uint(evtype%8)) != 0 {
-			eventcodes := make([]CapabilityCode, 0)
+	// for evtype := 0; evtype < EV_MAX; evtype++ {
+	// 	if evbits[evtype/8]&(1<<uint(evtype%8)) != 0 {
+	// 		eventcodes := make([]CapabilityCode, 0)
 
-			err = ioctl(dev.File.Fd(), uintptr(EVIOCGBIT(evtype, KEY_MAX)), unsafe.Pointer(codebits))
-			if err != 0 {
-				// ignore invalid capabilities such as EV_REP for some devices
-				if err == syscall.EINVAL {
-					continue
-				}
+	// 		err = ioctl(dev.File.Fd(), uintptr(EVIOCGBIT(evtype, KEY_MAX)), unsafe.Pointer(codebits))
+	// 		if err != 0 {
+	// 			// ignore invalid capabilities such as EV_REP for some devices
+	// 			if err == syscall.EINVAL {
+	// 				continue
+	// 			}
 
-				return err
-			}
+	// 			return err
+	// 		}
 
-			for evcode := 0; evcode < KEY_MAX; evcode++ {
-				if codebits[evcode/8]&(1<<uint(evcode%8)) != 0 {
-					c := CapabilityCode{evcode, ByEventType[evtype][evcode]}
-					eventcodes = append(eventcodes, c)
-				}
-			}
+	// 		for evcode := 0; evcode < KEY_MAX; evcode++ {
+	// 			if codebits[evcode/8]&(1<<uint(evcode%8)) != 0 {
+	// 				c := CapabilityCode{evcode, ByEventType[evtype][evcode]}
+	// 				eventcodes = append(eventcodes, c)
+	// 			}
+	// 		}
 
-			// capabilities[EV_KEY] = [KEY_A, KEY_B, KEY_C, ...]
-			key := CapabilityType{evtype, EV[evtype]}
-			capabilities[key] = eventcodes
-		}
-	}
+	// 		// capabilities[EV_KEY] = [KEY_A, KEY_B, KEY_C, ...]
+	// 		key := CapabilityType{evtype, EV[evtype]}
+	// 		capabilities[key] = eventcodes
+	// 	}
+	// }
 
-	dev.Capabilities = capabilities
+	// dev.Capabilities = capabilities
 	return nil
 }
 
 // An all-in-one function for describing an input device.
 func (dev *InputDevice) set_device_info() error {
-	info := device_info{}
+	// info := device_info{}
 
-	name := new([MAX_NAME_SIZE]byte)
-	phys := new([MAX_NAME_SIZE]byte)
+	// name := new([MAX_NAME_SIZE]byte)
+	// phys := new([MAX_NAME_SIZE]byte)
 
-	err := ioctl(dev.File.Fd(), uintptr(EVIOCGID), unsafe.Pointer(&info))
-	if err != 0 {
-		return err
-	}
+	// err := ioctl(dev.File.Fd(), uintptr(EVIOCGID), unsafe.Pointer(&info))
+	// if err != 0 {
+	// 	return err
+	// }
 
-	err = ioctl(dev.File.Fd(), uintptr(EVIOCGNAME), unsafe.Pointer(name))
-	if err != 0 {
-		return err
-	}
+	// err = ioctl(dev.File.Fd(), uintptr(EVIOCGNAME), unsafe.Pointer(name))
+	// if err != 0 {
+	// 	return err
+	// }
 
 	// it's ok if the topology info is not available
-	ioctl(dev.File.Fd(), uintptr(EVIOCGPHYS), unsafe.Pointer(phys))
+	// ioctl(dev.File.Fd(), uintptr(EVIOCGPHYS), unsafe.Pointer(phys))
 
-	dev.Name = bytes_to_string(name)
-	dev.Phys = bytes_to_string(phys)
+	// dev.Name = bytes_to_string(name)
+	// dev.Phys = bytes_to_string(phys)
 
-	dev.Vendor = info.vendor
-	dev.Bustype = info.bustype
-	dev.Product = info.product
-	dev.Version = info.version
+	// dev.Vendor = info.vendor
+	// dev.Bustype = info.bustype
+	// dev.Product = info.product
+	// dev.Version = info.version
 
-	ev_version := new(int)
-	err = ioctl(dev.File.Fd(), uintptr(EVIOCGVERSION), unsafe.Pointer(ev_version))
-	if err != 0 {
-		return err
-	}
-	dev.EvdevVersion = *ev_version
+	// ev_version := new(int)
+	// err = ioctl(dev.File.Fd(), uintptr(EVIOCGVERSION), unsafe.Pointer(ev_version))
+	// if err != 0 {
+	// 	return err
+	// }
+	// dev.EvdevVersion = *ev_version
 
 	return nil
 }
@@ -339,7 +338,7 @@ func ListInputDevices(device_glob_arg ...string) ([]*InputDevice, error) {
 	return devices, nil
 }
 
-func bytes_to_string(b *[MAX_NAME_SIZE]byte) string {
+func bytes_to_string(b *[256]byte) string {
 	idx := bytes.IndexByte(b[:], 0)
 	return string(b[:idx])
 }
